@@ -1,0 +1,30 @@
+
+;
+; Retrieve files from MCD in a more efficient way
+; First retrieve results page, then strip out the link to the data file and retrieve that.
+;
+; First loop gets the PTDI data (height vs Ls), second loop gets the TAU data (local time vs Ls).
+;
+
+.run
+for i=24,35 do begin
+ spawn,'wget "https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/mcdcgi.py?var1=p&var2=t&var3=dust_mmr&var4=vmr_h2oice&datekeyhtml=1&ls=all&localtime=12&year=2024&month=6&day=6&hours=18&minutes=56&seconds=9&julian=2460468.2889930555&martianyear=37&sol=514&latitude=83.8&longitude=235.0&altitude=0-50000&zkey=3&spacecraft=none&isfixedlt=off&dust='+strcompress(i,/re)+'&hrkey=1&averaging=off&dpi=160&islog=off&colorm=jet&minval=&maxval=&proj=cyl&palt=&plon=&plat=&trans=&iswind=off&latpoint=&lonpoint=" -O MY'+strcompress(i,/re)+'.txt'
+ spawn,'head -3 MY' + strcompress(i,/re) + '.txt | tail -1',mm
+ spawn,'rm MY' + strcompress(i,/re) + '.txt'
+
+ spawn,'wget https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/' + (strsplit(mm,"'",/extract))[1] + ' -O MCD_MY'+strcompress(i,/re)+'_83.8N_235E_PTDI.txt'
+endfor
+end
+
+
+
+.run
+for i=31,35 do begin
+ spawn,'wget "https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/mcdcgi.py?var1=tauref&var2=col_h2oice&var3=ps&var4=tsurf&datekeyhtml=1&ls=all&localtime=all&year=2024&month=6&day=6&hours=18&minutes=56&seconds=9&julian=2460468.2889930555&martianyear=37&sol=514&latitude=83.8&longitude=235.0&altitude=0&zkey=3&spacecraft=none&isfixedlt=off&dust='+strcompress(i,/re)+'&hrkey=1&averaging=off&dpi=160&islog=off&colorm=jet&minval=&maxval=&proj=cyl&palt=&plon=&plat=&trans=&iswind=off&latpoint=&lonpoint=" -O MY'+strcompress(i,/re)+'.txt'
+ spawn,'head -3 MY' + strcompress(i,/re) + '.txt | tail -1',mm
+ spawn,'rm MY' + strcompress(i,/re) + '.txt'
+
+ spawn,'wget https://www-mars.lmd.jussieu.fr/mcd_python/cgi-bin/' + (strsplit(mm,"'",/extract))[1] + ' -O MCD_MY'+strcompress(i,/re)+'_83.8N_235E_TAU.txt'
+endfor
+end
+
