@@ -191,24 +191,20 @@ RHO_ACCURATE = pyrt.make_empty_rho_accurate(MAXUMU,MAXPHI)
 # Create flux arrays for each wavelength to use as FBEAM later
 flux  = np.zeros(NCOL)
 if PLANK == False:
-    kb    = 1.380649e-23
-    c     = 2.99792458e8
-    h     = 6.626070e-34
-    Teff  = 5770.0
-    ww    = wvlen*1e-6
-    rsun  = 6.96e8
-    rau   = 1.496e11
+    kb    = 1.380649e-23  # Boltzmann's constant
+    c     = 2.99792458e8  # Speed of light
+    h     = 6.626070e-34  # Planck's constant
+    Teff  = 5770.0        # Solar effective temperature
+    ww    = wvlen*1e-6    # Wavelength in meters
+    rsun  = 6.96e8        # Solar radius in meters
+    rau   = 1.496e11      # 1 AU in meters
     aaa   = 1.52366231    # Orbital semi-major axis
     ecc   = 0.09341233    # Orbital eccentricity
     lsp   = 250.870       # Ls of perihelion
-    sol_dist = rau * aaa * (1.0-ecc**2) / (1.0 + ecc*np.cos(np.deg2rad(lsubs-lsp)))
-    bb    = (2.0*h*c**2/(ww**5)) * (1.0/( np.exp(h*c/(ww*kb*Teff))-1.0 ))
-    flux  = np.pi * bb * spectral_width*1e-6 * (rsun/sol_dist)**2
-    
-    aaa      = 1.52366231    # Orbital semi-major axis
-    ecc      = 0.09341233    # Orbital eccentricity
-    lsp      = 250.870       # Ls of perihelion
-    sol_dist = aaa * (1.0-ecc**2) / (1.0 + ecc*np.cos(np.deg2rad(lsubs-lsp)))
+ 
+    sol_dist = rau * aaa * (1.0-ecc**2) / (1.0 + ecc*np.cos(np.deg2rad(lsubs-lsp))) # Solar distance in meters
+    bb       = (2.0*h*c**2/(ww**5)) * (1.0/( np.exp(h*c/(ww*kb*Teff))-1.0 ))        # Radiances from the Planck function
+    flux     = np.pi * bb * spectral_width*1e-6 * (rsun/sol_dist)**2                # Flux at each wavelength in W/m^2
 totalvisflux = np.sum(flux)
 
 # Arrays to store the output as a function of direction, wavelength, and solar incidence angle
