@@ -1,0 +1,29 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Stressed-Scarps
+message: >-
+  Thermal heating and stress models for steep martian scarps
+  at the North Pole to explain fracturing and avalanches
+  there. Atmospheric radiation code utilizes pyRT.DISORT and
+  the Mars Climate Database.
+type: software
+authors:
+  - given-names: Shane
+    family-names: Byrne
+    email: sbyrne@arizona.edu
+    affiliation: University of Arizona
+    orcid: 'https://orcid.org/0000-0002-6735-4685'
+repository-code: 'https://github.com/shanebyrneonmars/Stressed-Scarps'
+url: 'https://github.com/shanebyrneonmars/Stressed-Scarps'
+abstract: >-
+  Thermal heating and stress models for steep martian scarps
+  at the North Pole to explain fracturing and avalanches
+  there. Atmospheric radiation code utilizes pyRT.DISORT and
+  the Mars Climate Database.
+keywords:
+  - Mars
+  - Polar
+  - Avalanche
+license: BSD-3-Clause
