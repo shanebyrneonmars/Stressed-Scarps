@@ -13,7 +13,7 @@ start_time = time.time()
 rootfolder = '/Users/shane/Desktop/Avalanche/Stressed-Scarps/'
 
 
-PLANK        = True               # False to do the scattering solution only, no emission. True to include emission
+PLANK        = False               # False to do the scattering solution only, no emission. True to include emission
 MCD          = False               # True to use MCD output, False to use a simple exponential atmosphere
 lsubs        = 30.0
 mcd_fname    = rootfolder+'datafiles/MCD_Output/MCD_MY33_83.8N_235E_PTDI.txt'
@@ -24,8 +24,8 @@ if PLANK == True:
     NINC  = 1
     ALB_i = np.array([0.1, 0.05, 0.0])
 elif PLANK == False:
-    NCOL  = 78
-    NINC  = 100
+    NCOL  = 3 #78
+    NINC  = 3 #100
     ALB_i = np.array([0.15,0.25,0.65])
 
 
@@ -198,8 +198,17 @@ if PLANK == False:
     ww    = wvlen*1e-6
     rsun  = 6.96e8
     rau   = 1.496e11
+    aaa   = 1.52366231    # Orbital semi-major axis
+    ecc   = 0.09341233    # Orbital eccentricity
+    lsp   = 250.870       # Ls of perihelion
+    sol_dist = rau * aaa * (1.0-ecc**2) / (1.0 + ecc*np.cos(np.deg2rad(lsubs-lsp)))
     bb    = (2.0*h*c**2/(ww**5)) * (1.0/( np.exp(h*c/(ww*kb*Teff))-1.0 ))
-    flux  = np.pi * bb * spectral_width*1e-6 * (rsun/rau)**2
+    flux  = np.pi * bb * spectral_width*1e-6 * (rsun/sol_dist)**2
+    
+    aaa      = 1.52366231    # Orbital semi-major axis
+    ecc      = 0.09341233    # Orbital eccentricity
+    lsp      = 250.870       # Ls of perihelion
+    sol_dist = aaa * (1.0-ecc**2) / (1.0 + ecc*np.cos(np.deg2rad(lsubs-lsp)))
 totalvisflux = np.sum(flux)
 
 # Arrays to store the output as a function of direction, wavelength, and solar incidence angle

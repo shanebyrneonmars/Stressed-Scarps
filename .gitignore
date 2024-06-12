@@ -1,3 +1,4 @@
 #Too Big
 datafiles/Wolff_Aerosols/droxtal_050_tmat1_reff_v010_ver121.fits
-
+pickle/DISORT_THERMAL_SimpleAtmosphere_TAUD_0.10_TAUI_0.00.pkl
+pickle/DISORT_VIS_SimpleAtmosphere_TAUD_0.10_TAUI_0.00.pkl
