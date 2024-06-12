@@ -13,7 +13,7 @@ start_time = time.time()
 rootfolder = '/Users/shane/Desktop/Avalanche/Stressed-Scarps/'
 
 
-PLANK        = False               # False to do the scattering solution only, no emission. True to include emission
+PLANK        = True               # False to do the scattering solution only, no emission. True to include emission
 MCD          = False               # True to use MCD output, False to use a simple exponential atmosphere
 lsubs        = 30.0
 mcd_fname    = rootfolder+'datafiles/MCD_Output/MCD_MY33_83.8N_235E_PTDI.txt'
@@ -111,7 +111,7 @@ dust_particle_size = np.ones(dust_profile.shape[0]) * 1.5
 ice_particle_size = np.ones(ice_profile.shape[0]) * 2.0
 
 # Load the scattering data for dust and ice
-dwolff = fits.open(rootfolder+'datafiles/Wolff_Aersols/mars045i_all_area_s0780.fits')
+dwolff = fits.open(rootfolder+'datafiles/Wolff_Aerosols/mars045i_all_area_s0780.fits')
 particle_size_grid       = dwolff[5].data     # 25 particle sizes
 wavelength_grid          = dwolff[6].data     # 228 wavelength values
 pmom_grid                = dwolff[2].data     # 160 scattering moments at each particle size and wavelength
@@ -124,7 +124,7 @@ dust_legendre      = pyrt.regrid(pmom_grid,                                     
 dust_ext           = pyrt.regrid(ext_grid,                                            particle_size_grid, wavelength_grid, dust_particle_size, wvlen)
 dust_optical_depth = pyrt.optical_depth(dust_profile, column_density, dust_ext, NADIRDUSTTAU)
 
-iwolff = fits.open(rootfolder+'datafiles/Wolff_Aersols/droxtal_050_tmat1_reff_v010_ver121.fits')
+iwolff = fits.open(rootfolder+'datafiles/Wolff_Aerosols/droxtal_050_tmat1_reff_v010_ver121.fits')
 particle_size_grid       = iwolff[5].data     # 54 particle sizes
 wavelength_grid          = iwolff[6].data     # 445 wavelength values
 pmom_grid                = iwolff[2].data     # 192 scattering moments at each particle size and wavelength
