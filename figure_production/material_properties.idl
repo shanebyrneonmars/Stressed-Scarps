@@ -1,0 +1,113 @@
+;
+; Young's Modulus
+;
+
+;c11 = 139.29d0 * 101.3d6 
+;c12 =  70.82d0 * 101.3d6 
+;ee  = (c11^2 + c11*c12 - 2.d0*c12^2) / (c11+c12)
+;vv  = (c12/(c11+c12))
+;print,ee/1d9,vv
+
+;c11 = 139.29d0 * 101.3d6 * (1.d0-a*(t-t0))
+;c12 =  70.82d0 * 101.3d6 * (1.d0-a*(t-t0)) 
+;ee  = (c11^2 + c11*c12 -2.d0*c12^2) / (c11+c12)
+;vv  = (c12/(c11+c12))
+
+;c11 = 139.29d0 * 101.3d6 * (1.d0-a*(t-273.15d0)) / (1.d0-a*(t0-273.15d0))
+;c12 =  70.82d0 * 101.3d6 * (1.d0-a*(t-273.15d0)) / (1.d0-a*(t0-273.15d0))
+;ee2  = (c11^2 + c11*c12 -2.d0*c12^2) / (c11+c12)
+;vv  = (c12/(c11+c12))
+
+
+t0 = 273.15d0 - 16.d0
+ t = dindgen(100) + 151.d0
+ a = 1.42d-3
+
+mu = 0.325                           ; Gammon's paper
+e2 = 9.332d9 * (1.d0 - a*(t-t0))     ; 
+
+e1 = 2.339d10 - 6.48d7*T            ; Gold's paper
+e2 = 1.274d10 - 1.33d7*T            ; Gammon's paper
+
+n    = -20.d0
+e    = (e1^n + e2^n)^(1.0/n)          ; Our compromise
+dedt = e^(1.0-n) * (-6.48d7/e1^(1.0-n) - 1.33d7/e2^(1.0-n))
+
+p   = plot(t,e1/1d9,name='Gold')
+p.xrange = [150,250]
+p.yrange = [6,12]
+p.xthick=2
+p.ythick=2
+p.xtitle='Temperature (K)'
+p.ytitle='E (GPa)'
+p.ytickfont_size=18
+p.xtickfont_size=18
+pp  = plot(t,e2/1d9,/overplot,name='Gammon et al.',linestyle=2)
+ppp = plot(t,e/1d9,thick=4,/overplot,name='Combined E')
+ll = legend(target=[p,pp,ppp],position=[190,8],/data)
+p.save,'~/Desktop/scarp_paper_youngs_modulus.jpg',border=10,resolution=150
+
+
+
+;
+; Thermal expansion coefficient
+; Use 8th order polynomial for unit volume from Rottger et al. (1994, 2012)
+;
+
+a = [128.2147d0, 0.d0, 0.d0, -1.3152d-6, 2.4837d-8, -1.6064d-10, 4.6097d-13, -4.9661d-16, 0.d0]
+t = dindgen(273)
+alp = dblarr(n_elements(t))
+for i=0, n_elements(t)-1L do alp(i) = total(dindgen(9)*a*t(i)^(dindgen(9)-1.d0)) / total(a*t(i)^dindgen(9)) /3.d0
+
+ll = linfit(t(150:250),alp(150:250),/double,yfit=yf)            ; linear fit to alpha 150-250K
+plot,t,alp*1d5,xr=[150,250]
+oplot,t(150:250),yf*1d5,l=2
+
+xx = [transpose(t(150:250)^1.d0),transpose(t(150:250)^2.d0)]    ; quadratic fit to alpha 150-250K
+rr=regress(xx,alp(150:250),/double,const=cc,yfit=yf)
+plot,t,alp*1d5,xr=[150,250],xs=1
+oplot,t(150:250),yf*1d5,l=2
+
+plot,t(150:250),(alp(150:250)-yf)/alp(150:250)*1d2,l=2          ; Check fit differences
+
+
+
+
+;
+; ice grain size vs phi
+;
+
+p = (findgen(1000)+1.0)/10000.
+f = 1.
+
+d1 = (13.4/sqrt(f)) * (0.05/p)^(0.5) /1d6
+d1b = (13.4/sqrt(0.25)) * (0.05/p)^(0.5) /1d6
+d2 = 10.0*(0.05/p)                   /1d6
+
+pp=plot(p,d1*1d6,/ylog,name='GB, f=1',/buffer)
+pp.thick=2
+pp.xrange = [0,0.05]
+pp.yrange = [10,1000]
+pp.xthick=2
+pp.ythick=2
+pp.xtitle='Dust Volume Fraction'
+pp.ytitle='Grain size ($\mu$m)'
+pp.ytickfont_size=18
+pp.xtickfont_size=18
+
+ppp=plot(p,d1b*1d6,/overplot,name='GB, f=0.25')
+ppp.linestyle=2
+ppp.thick=2
+
+pppp=plot(p,d2*1d6,/overplot,name='Uniform')
+pppp.linestyle=3
+pppp.thick=2
+
+ll = legend(target=[pp,ppp,pppp],position=[0.045,0.9],/data)
+ll.font_size=18
+
+pp.save,'~/Desktop/scarp_paper_grain_size.jpg',border=10,resolution=150
+
+
+
+w = p*3000.0 / ( (1-p)*920.0 + p*3000.0)

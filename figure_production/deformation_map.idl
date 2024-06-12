@@ -1,0 +1,131 @@
+d    = 1d-3
+ot   = dindgen(1000)/4.+40.0
+osig = 10.d0^(dindgen(1000)*7.0/999.0 + 2.0)
+
+t    = rebin(ot,n_elements(ot),n_elements(osig))
+sig  = rebin(transpose(osig),n_elements(ot),n_elements(osig))
+
+e   = 9.3d9       ; Young's Modulus
+r   = 8.31d0      ; Universal Gas Constant
+vm  = 1.97d-5     ; Molar volume of Ice I
+del = 9.04d-10    ; Width of grain boundary (taken to be 2xBurger's vector)
+dv0 = 9.10d-4     ; Pre-exponential constant for volume diffusion in ice
+db0 = 5.80d-4     ; Pre-exponential constant for grain-boundary diffusion in ice
+
+p = [-2.d0,-3.d0,0.0d0, -1.4d0,  0.0d0]    ; Grain size dependance exponents for five deformation mechanisms
+n = [1.d0, 1.d0, 2.4d0,  1.8d0,  4.0d0]    ; Stress exponents for five deformation mechanisms
+q = [59.4, 49, 60, 49, 60]*1d3             ; Activation energies for five deformation mechanisms
+a = [ (42.d0*vm/(3.d0*r)) *dv0*1d6 , (42.d0*vm/(3.d0*r)) *!pi*del*db0*1d6  , 5.5d7,  3.9d-3, 4.0d5] * (1d-6)^n    ; Strain rate prefactors including correction for MPa to Pa
+
+a(2:4) = a(2:4) / (2.d0 * 3.d0^(-(n(2:4)+1.d0)/2.d0))                                                             ; Correct 'A' measured in uniaxial compression to true 'A' 
+;a = a / (2.d0 * 3.d0^(-(n+1.d0)/2.d0))                                                             ; Correct 'A' measured in uniaxial compression to true 'A' 
+
+e_diffv = 3.d0^(-(n(0)+1.d0)/2.d0) * a(0) * d^p(0) * exp(-q(0)/(r*t)) / t  * sig^n(0)
+e_diffb = 3.d0^(-(n(1)+1.d0)/2.d0) * a(1) * d^p(1) * exp(-q(1)/(r*t)) / t  * sig^n(1)
+e_basal = 3.d0^(-(n(2)+1.d0)/2.d0) * a(2) * d^p(2) * exp(-q(2)/(r*t))      * sig^n(2)
+e_gbs   = 3.d0^(-(n(3)+1.d0)/2.d0) * a(3) * d^p(3) * exp(-q(3)/(r*t))      * sig^n(3)
+e_disl  = 3.d0^(-(n(4)+1.d0)/2.d0) * a(4) * d^p(4) * exp(-q(4)/(r*t))      * sig^n(4)
+
+ediff   = e_diffv + e_diffb
+egss    = 1.d0 / ( 1.d0/e_basal + 1.d0/e_gbs)
+
+e_tot = ediff + egss + e_disl
+
+
+;
+; Reproduce plots in Barr and Showman
+;
+
+cc = contour(e_disl-e_gbs, ot, osig/1d6,ylog=1,axis_style=2,margin=[0.15,0.15,0.05,0.05])
+cc.xthick=2
+cc.ythick=2
+cc.ytickfont_size=18
+cc.xtickfont_size=18
+cc.ytitle='Stress (MPa)'
+cc.xtitle='T (K)'
+cc.xrange=[47,273]
+cc.yrange=[1d-4,1d3]
+cc.c_thick = 2
+cc.C_VALUE = [0.d0]
+
+cc1 = contour(ediff-e_gbs, ot, osig/1d6,/overplot)
+cc1.c_thick = 2
+cc1.C_VALUE = [0.d0]
+
+cc2 = contour(e_basal-e_gbs, ot, osig/1d6,/overplot)
+cc2.c_thick = 2
+cc2.C_VALUE = [0.d0]
+cc2.c_linestyle=5
+
+cc = contour(e_disl-egss, ot, osig/1d6,ylog=1,axis_style=2,margin=[0.15,0.15,0.05,0.05])
+cc.xthick=2
+cc.ythick=2
+cc.ytickfont_size=18
+cc.xtickfont_size=18
+cc.ytitle='Stress (MPa)'
+cc.xtitle='T (K)'
+cc.xrange=[150,250]
+cc.yrange=[1d-6,10]
+cc.c_thick = 2
+cc.C_VALUE = [0.d0]
+
+cc1 = contour(ediff-egss, ot, osig/1d6,/overplot)
+cc1.c_thick = 2
+cc1.C_VALUE = [0.d0]
+
+
+
+;
+; Figure for avalanche paper
+;
+
+
+pic = bytarr(n_elements(ot),n_elements(osig))
+pic(where( (ediff  GT egss)  AND (ediff  GT e_disl))) = 1
+pic(where( (egss   GT ediff) AND (egss   GT e_disl))) = 2
+pic(where( (e_disl GT egss)  AND (e_disl GT ediff)))  = 3
+
+cc = contour(pic, ot, osig/1d6,ylog=1,axis_style=2,margin=[0.15,0.15,0.05,0.05])
+cc.xthick=2
+cc.ythick=2
+cc.ytickfont_size=18
+cc.xtickfont_size=18
+cc.ytitle='Stress (MPa)'
+cc.xtitle='T (K)'
+cc.xrange=[150,250]
+cc.yrange=[1d-3,10]
+cc.c_thick = 2
+cc.ytickunits='exponent'
+cc.fill=1
+cc.c_color = [[150,150,150],[200,200,200],[255,255,255]] 
+cc.c_value=[0,1.5,2.5]         
+cc.transparency=0
+
+cc1 = contour(pic, ot, osig/1d6,/overplot)
+cc1.c_thick = 2
+cc1.c_label_show=0
+cc1.c_value=[0,1.5,2.5]         
+cc1.c_color=['black','black','black']
+
+
+cc2 = contour(alog10(e_tot), ot, osig/1d6,/overplot)
+cc2.c_value = dindgen(30)-20.d0
+;labshow = bytarr(n_elements(cc2.c_value))
+;labshow(where( ((dindgen(30)-20.d0) mod 2) EQ 0)) = 1
+;cc2.c_label_show = labshow
+;cc2.C_LABEL_OBJECTS = [OBJ_NEW('IDLgrText','10!E'+strcompress(string(dindgen(30)-20.d0,format='(I3)'),/re)+'!N',enable_formatting=1)] 
+
+cc2.c_label_interval = 0.5
+cc2.C_USE_LABEL_ORIENTATION=1
+cc2.c_label_show=1
+cc2.color='black'
+
+;lab1 = text(245,6,/data,'$\epsilon_{dc}$'                                      ,fill_background=1,fill_color=[255,255,255],font_size=25,alignment=1)
+;lab2 = text(245,0.20,/data,'$( \epsilon^{-1}_{bs} + \epsilon^{-1}_{gbs} )^{-1}$'  ,fill_background=1,fill_color=[200,200,200],font_size=25,alignment=1)
+;lab3 = text(245,0.002,/data,'$( \epsilon_{vd} + \epsilon_{gbd})$'                  ,fill_background=1,fill_color=[150,150,150],font_size=25,alignment=1)
+
+
+lab1 = text(155,0.002,/data,'d = '+strcompress(string(d*1d6,format='(I4)'),/re)+' $\mu m$',fill_background=1,fill_color=[255,255,255],font_size=25,alignment=0)
+cc.save,'~/Desktop/deformation_map_'+string(d*1d6,format='(I04)')+'.jpg',border=10,resolution=200
+
+
