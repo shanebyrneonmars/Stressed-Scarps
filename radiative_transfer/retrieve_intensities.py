@@ -8,13 +8,13 @@ import time
 from scipy.interpolate import interpn
 import pandas as pd
 
+from pyRT_DISORT_MCD_utils import process_mcd_output_for_DISORT, read_mcd_output
 start_time = time.time()
-
 rootfolder = '/Users/shane/Desktop/Avalanche/Stressed-Scarps/'
 
 
 PLANK        = False               # False to do the scattering solution only, no emission. True to include emission
-MCD          = False               # True to use MCD output, False to use a simple exponential atmosphere
+MCD          = True                # True to use MCD output, False to use a simple exponential atmosphere
 lsubs        = 30.0
 mcd_fname    = rootfolder+'datafiles/MCD_Output/MCD_MY33_83.8N_235E_PTDI.txt'
 
@@ -24,8 +24,8 @@ if PLANK == True:
     NINC  = 1
     ALB_i = np.array([0.1, 0.05, 0.0])
 elif PLANK == False:
-    NCOL  = 3 #78
-    NINC  = 3 #100
+    NCOL  = 78
+    NINC  = 100
     ALB_i = np.array([0.15,0.25,0.65])
 
 

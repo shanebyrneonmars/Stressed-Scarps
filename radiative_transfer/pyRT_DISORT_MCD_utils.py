@@ -1,4 +1,7 @@
-def process_mcd_output_for_DISORT(ls,fname):
+def process_mcd_output_for_DISORT(lsubs,fname):
+    import numpy as np
+    from scipy.interpolate import interpn
+
     tname, cname, rname, cols, rows, vals = read_mcd_output(fname)
     tname2, cname2, rname2, cols2, rows2, vals2 = read_mcd_output(fname.replace('PTDI','TAU'))
 
@@ -21,6 +24,8 @@ def process_mcd_output_for_DISORT(ls,fname):
 
 
 def read_mcd_output(fname):
+    import numpy as np
+
     # Read the entire file into a string
     with open(fname, 'r') as f:
         lines = f.readlines()
@@ -102,6 +107,8 @@ def read_mcd_output(fname):
 
 
 def FindSlopeFluxes(savename,slope,aspect):
+    import numpy as np
+    import pickle
 
     # Calculates the direct and diffuse fluxes as a function of solar incidence angle
     # Also returns the direct flux with the zero atmosphere approx. (geometry only)
@@ -164,6 +171,7 @@ def FindSlopeFluxes(savename,slope,aspect):
 
 
 def MartianSolarDay(NSTP,LsubS,Lat):
+    import numpy as np
 
     # Calculates NSTP values of the Solar Azimuth and Incidence angles (in radians) for one Martian day
     # Requires scalars for the solar longitude (in degrees) and Latitude (in degrees)
@@ -191,6 +199,8 @@ def MartianSolarDay(NSTP,LsubS,Lat):
 def MakeFluxLookupTable(savename, slope, aspect):
     # Calculates the direct and diffuse fluxes at many solar incidence and azimuth angles for a specific slope/aspect
     # Requires the standard DISORT results pickle file
+    import numpy as np
+    import pickle
 
     with open(savename, 'rb') as f:
         data = pickle.load(f)
