@@ -194,7 +194,7 @@ if PLANK == False:
     kb    = 1.380649e-23  # Boltzmann's constant
     c     = 2.99792458e8  # Speed of light
     h     = 6.626070e-34  # Planck's constant
-    Teff  = 5770.0        # Solar effective temperature
+    Teff  = 5780.0        # Solar effective temperature
     ww    = wvlen*1e-6    # Wavelength in meters
     rsun  = 6.96e8        # Solar radius in meters
     rau   = 1.496e11      # 1 AU in meters
