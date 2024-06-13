@@ -13,7 +13,7 @@ start_time = time.time()
 rootfolder = '/Users/shane/Desktop/Avalanche/Stressed-Scarps/'
 
 
-PLANK        = False               # False to do the scattering solution only, no emission. True to include emission
+PLANK        = True               # False to do the scattering solution only, no emission. True to include emission
 MCD          = True                # True to use MCD output, False to use a simple exponential atmosphere
 lsubs        = 30.0
 mcd_fname    = rootfolder+'datafiles/MCD_Output/MCD_MY33_83.8N_235E_PTDI.txt'
