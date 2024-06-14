@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
+from scipy.interpolate import interpn
 
-savename = 'DISORT_PS_VIS_TAUD_0.00_TAUI_0.00.pkl'
+savename = '../pickle/DISORT_THERMAL_MCD_MY33_83.8N_235E_LSUBS_030.pkl'
 slope    = np.deg2rad(70.0)
 aspect   = np.deg2rad(225.0)
 
