@@ -1,0 +1,71 @@
+
+Flat Terrain Preparation
+==================================
+1. Prepare SP structure for flat terrain calculation (sp.flat_calculate ='XX.sav', sp.flat_flux_file='', slope = 0)
+2. Run preprocess_thermal_model.pro as before. File sp.run_number+'_preprocessed.sav' is created.
+	->No surface scattering included (obviously)
+	->Simple atmospheric radiation added to SWF and LWF
+
+**** Need to intervene here ****
+Read sp.run_number+'_preprocessed.sav'
+Change LWF and SWF to MCD+DISORT values  
+
+!!!!!!!!!!!!!! What does one use for surface temperature and albedo? !!!!!!!!!!!!!!!
+This probably requires iteration... 
+
+Change sp.run_number to be 'DISORT_'+sp.run_number
+Change sp.flat_calculate to be 'DISORT_'+sp.flat_calculate
+Write 'DISORT_'+sp.run_number+'_preprocessed_MCD.sav'
+
+
+3. Run thermal_model_v07.pro as before. 
+Use sp.run_number+'_preprocessed.sav'. Two files are created [sp.run_number+'_results.sav' and sp.flat_calculate]
+Use 'DISORT_'+sp.run_number+'_preprocessed.sav'. Two files are created ['DISORT_'+sp.run_number+'_results.sav' and 'DISORT_'+sp.flat_calculate]
+
+
+
+Sloping Terrain Run
+==================================
+
+1. Prepare SP structure for sloping terrain calculation (sp.flat_calculate ='', sp.flat_flux_file = 'XX.sav', slope =/= 0)
+	This is still the pre-disort approach... it's ok since we'll swap out atm and surface scattered radiation in the next step
+
+2. Run preprocess_thermal_model.pro as before. File sp.run_number+'_preprocessed.sav' is created.
+	-> Surface scattering will be added based on non-disort results from above 
+	-> Simple atmospheric radiation added to SWF and LWF
+
+**** Need to intervene here ****
+Read sp.run_number+'_preprocessed.sav'
+Read MCO2 and TSURF results from the flat surface DISORT_??_results.sav file. Use these to calculate the LWF and SWF on the scarp.
+Change LWF and SWF to MCD+DISORT values. Includes direct, atm, and surface scattering.
+Change sp.run_number to be 'DISORT_'+sp.run_number
+Write 'DISORT_'+sp.run_number+'_preprocessed_MCD.sav'
+
+No iteration is required here because the temperature or albedo of the scarp doesn't affect the atmosphere.
+
+3.  Run thermal_model_v07.pro for the adjusted and original preprocessed file
+
+
+
+Simplified
+==================================
+Make parameter files as before
+
+Preprocess the flat run
+Get the flat thermal results
+Iterate on the flat run using temperatures and mco2 values to adjust the atmosphere.
+
+Preprocess the slope run
+Create a new preprocessing file using the DISORT-adjusted flat results
+Get the slope thermal results for the original approximations and the DISORT-adjusted results
+
+Get the stress results for the original and adjusted slope temperatures.
+
+
+
+Next Steps
+==================================
+Validate MCD scattering results
+Generate scattering results for all Ls
+
+Temps and MCO2 are in IDL save files... 

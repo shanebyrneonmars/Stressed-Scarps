@@ -1,5 +1,5 @@
 function stress_from_temp_results, fname, d = d
-  compile_opt idl2
+  compile_opt idl3
 
   if (n_elements(d) eq 0) then begin
     print, 'Assuming a grain size of 1mm'
