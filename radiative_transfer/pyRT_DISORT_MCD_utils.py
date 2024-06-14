@@ -259,27 +259,33 @@ def MakeFluxLookupTable(savename, slope, aspect):
 
     sname2 = savename[:-4]+'_S'+"{:02d}".format(np.round(slope*180.0/np.pi).astype(int))+'A'+"{:03d}".format(np.round(aspect*180.0/np.pi).astype(int))+'.pkl'
 
+    direct_axes  = (solarAZ_i, UMU0_i)
+    diffuse_axes = (solarAZ_i, UMU0_i, ALB_i)
+    if PLANK == True:
+        diffuse_axes = (solarAZ_i, BTEMP_i, 1.0-ALB_i)
+
     with open(sname2, 'wb') as f:
         pickle.dump({
-            'uu_surf_inc': uu_surf_inc,
-            'rfldir_inc': rfldir_inc,
-            'rfldn_inc': rfldn_inc,
-            'flup_inc': flup_inc,
-            'PHI': PHI,
-            'UMU': UMU,
+#            'uu_surf_inc': uu_surf_inc,
+#            'rfldir_inc': rfldir_inc,
+#            'rfldn_inc': rfldn_inc,
+#            'flup_inc': flup_inc,
+#            'PHI': PHI,
+#            'UMU': UMU,
             'UMU0_i': UMU0_i,
-            'PHI0': PHI0,
+#            'PHI0': PHI0,
             'ALB_i': ALB_i,
+            'BTEMP_i': BTEMP_i,
+            'PLANK': PLANK,
             'totalvisflux': totalvisflux,
             'slope': slope,
             'aspect': aspect,
             'solarAZ_i': solarAZ_i,
             'direct': direct,
             'diffuse': diffuse,
+            'direct_axes': direct_axes,
+            'diffuse_axes': diffuse_axes,
             'atmless': atmless
         }, f)
 
-    return direct, diffuse, atmless
-
-
-
+    return direct, diffuse, atmless, direct_axes, diffuse_axes

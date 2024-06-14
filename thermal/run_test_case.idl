@@ -1,0 +1,102 @@
+
+;
+; Create a blank template and populate with RSL site values
+; Save the results for intermediate processing
+;
+
+sp=return_blank_thermal_model_structure()
+
+
+
+;
+; Set up Flat Terrain composed of dark dunes with pore-filling ice 5cm below the surface
+;
+
+sp.body_name = 'MARS'                      ; Location and geometry of surface
+sp.latitude  = 83.8
+sp.longitude = 235.5
+sp.slope     = 0.0
+sp.aspect    = 0.0
+sp.elevation = -4460.0
+
+sp.albedo            = 0.15                ; Boundary properties
+sp.emissivity        = 1.d0
+sp.heat_flux         = 0.03
+
+sp.layer_top(0)      = 0.0                 ; Thermophysical properties of the surface layers
+sp.layer_inertia(0)  = 225.0
+sp.layer_density(0)  = 1650.0
+sp.layer_capacity(0) = 837.0
+
+sp.layer_top(1)      = 0.05                 ; Thermophysical properties of the surface layers
+sp.layer_inertia(1)  = 2477.0
+sp.layer_density(1)  = 2020.0
+sp.layer_capacity(1) = 980.0
+
+sp.daily_layers      = 15.00d0             ; Parameters to describe subsurface layers. Number of layers in
+sp.annual_layers     =  6.00d0             ; the diurnal skin depth. Number of annual skin depths in model
+sp.layer_growth      =  1.03d0             ; domain and geometric factor by which layer thickness increases.
+
+sp.dt                = 200.d0              ; Force choice of timestep (leave at zero to default to Courant criterion)
+sp.start_time        = 155515233.55d0      ; Start time of model
+sp.run_cycles        = 15.d0               ; Number of cycles to run model for before exporting results
+sp.reset_cycle       = 5.d0                ; Cycle number after which all sub-surface temperatures are reset to the surface annual mean
+sp.initial_temperature  = 180.d0                ; Initial guess at surface temperature
+sp.numeric_scheme    = 0.5d0               ; Numerical scheme to use: 0.0 Fully Implicit, 0.5 Crank-Nicolson, 1.0 Fully Explicit or anything inbetween
+
+sp.atm_ir            = 0.04                ; Atmospheric properties including frost
+sp.atm_vis           = 0.00
+sp.frost_switch      = 1.0
+sp.frost_albedo      = 0.65
+sp.frost_emissivity  = 0.9
+
+sp.run_number        = 'steepscarp_MY33_83.8N_235E_flat'
+sp.flat_flux_file    = ''                          ; Radiation from surrounding flat terrain
+sp.flat_calculate    = 'steepscarp_MY33_83.8N_235E_flat.sav'       ; Calculate flat-terrain behavior for a later sloping terrain run
+save,sp,filename     = sp.run_number+'_parameters.sav'
+
+;
+; Set up slope parameters of dusty ice (no distinct lag) more daily layers as skin depth is higher
+;
+
+
+sp.albedo            = 0.25                ; Boundary properties
+sp.slope             = 70.d0
+sp.aspect            = 225.d0
+
+sp.daily_layers      = 25.00d0             ; Parameters to describe subsurface layers. Number of layers in diurnal wave.
+
+sp.layer_top(0)      = 0.000                 ; Thermophysical properties of the surface layers
+sp.layer_inertia(0)  = 2152.0
+sp.layer_density(0)  = 925.0
+sp.layer_capacity(0) = 1615.0
+
+sp.layer_top(1)      = 0.0                ; Thermophysical properties of the surface layers
+sp.layer_inertia(1)  = 0.0
+sp.layer_density(1)  = 0.0
+sp.layer_capacity(1) = 0.0
+
+
+sp.run_number        = 'steepscarp_MY33_83.8N_235E_S70A225'
+sp.flat_calculate    = ''
+sp.flat_flux_file    = 'steepscarp_MY33_83.8N_235E_flat.sav'
+save,sp,filename     =  sp.run_number+'_parameters.sav'
+
+
+.reset_session
+;
+; Preprocess the flat terrain and run the initial thermal model
+;
+ restore, 'steepscarp_MY33_83.8N_235E_flat_parameters.sav'
+ preprocessed_flat = preprocess_thermal_model(sp)
+ results_flat = thermal_model_v07(preprocessed_flat)
+
+
+
+
+
+
+
+
+end
+
