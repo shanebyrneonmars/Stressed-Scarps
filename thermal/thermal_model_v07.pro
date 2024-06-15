@@ -21,6 +21,7 @@ function thermal_model_v07,pname
 ; 05/29/2013 Bug fix - heat flux should be Q*cos(slope) and not just Q - should probably add flux of q*dz*sin(slope) to each layer too...
 ; 06/03/2013 Changed temperature reset to account for subsurface heatflow
 ; 06/13/2013 Bug fix - Exported temperatures and rflat fluxes were one timestep off where they should have been
+; 06/14/2024 Added cos_i and az to exported results
 
 ;
 ; Restore pname
@@ -200,14 +201,14 @@ If (sp.flat_calculate NE '') then begin
  
  if (sp.run_number NE '') then begin 
   oname = sp.run_number+'_results.sav'
-  save,ls,ltst,mc,sav_allt,itt,ci,z,dz,sp,filename=oname
+  save,ls,ltst,mc,sav_allt,itt,ci,z,dz,sp,cos_i,az,filename=oname
   print,'Model results saved to: '+oname
  endif
 endif
 
 If (sp.flat_calculate EQ '') then begin
  oname = sp.run_number+'_results.sav'
- save,ls,ltst,mc,sav_allt,itt,ci,z,dz,sp,filename=oname
+ save,ls,ltst,mc,sav_allt,itt,ci,z,dz,sp,cos_i,az,filename=oname
  print,'Model results saved to: '+oname
 endif
 

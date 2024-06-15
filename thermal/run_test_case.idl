@@ -92,7 +92,24 @@ save,sp,filename     =  sp.run_number+'_parameters.sav'
  results_flat = thermal_model_v07(preprocessed_flat)
 
 
+;
+; Use the thermal model results to update radiation
+;
+restore, results_flat
 
+alb = rebin([0.15],n_elements(mc))
+alb(where(mc GT 0)) = 0.65
+
+emm = rebin([1.0],n_elements(mc))
+emm(where(mc GT 0)) = 0.9
+
+temp = itt(*,0)
+
+rdfits_struct,"../radiative_transfer/new1.fits",pp
+thermal      = transpose(pp.im1)
+flat_thermal = transpose(pp.im2)
+
+interpol_coordinates = [ls],
 
 
 

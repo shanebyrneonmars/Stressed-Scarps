@@ -1,6 +1,6 @@
 import numpy as np
 import pickle
-
+from astropy.io import fits
 
 #
 # Setup Ls values and all the filenames to consolidate into four tables
@@ -93,3 +93,17 @@ with open(sname, 'wb') as f:
         # 'flat_vis': flat_vis,
         # 'flat_vis_axes': flat_vis_axes
     }, f)
+
+
+
+hdr = fits.Header()
+hdr['COMMENT1'] = "Thermal and flat_thermal are 3D arrays with dimensions (Ls, Temperature, Emissivity)"
+hdr['COMMENT2'] = "Vis and flat_vis are 4D arrays with dimensions (Ls, solar Azimuth, Solar Incidence, Albedo)"
+empty_primary = fits.PrimaryHDU(header=hdr)
+image_hdu1 = fits.ImageHDU(data=thermal,      name="Thermal flux on slope")
+image_hdu2 = fits.ImageHDU(data=flat_thermal, name="Thermal flux on flat surface")
+image_hdu3 = fits.ImageHDU(data=thermal_axes[0], name="Ls")
+image_hdu4 = fits.ImageHDU(data=thermal_axes[1], name="Temperature")
+image_hdu5 = fits.ImageHDU(data=thermal_axes[2], name="Emmissivity")
+hdul = fits.HDUList([empty_primary, image_hdu1, image_hdu2])
+hdul.writeto(sname.replace('.pkl', '.fits'))

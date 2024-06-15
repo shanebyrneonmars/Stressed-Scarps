@@ -280,7 +280,8 @@ eot = (ma2-ta2)                                                  ; Equation of t
 if (body_name EQ 'MARS') then eot = eot + (2.861d0*sin(2.d0*Ls) - 0.071d0*sin(4.d0*Ls) + 0.002d0*sin(6.d0*Ls))*d2r  ; Adding planet-specific perturbations could improve this....
 
 ;ltst = lmst * 12.d0/!dpi                            ; I KNOW THIS IS A LITTLE WRONG BECAUSE ORBITAL SPEED VARIES, FIX SOMEDAY...
-ltst = ((lmst+eot) * 12.d0/!dpi) mod 24.d0           ; someday=today...  
+;ltst = ((lmst+eot) * 12.d0/!dpi) mod 24.d0           ; someday=today...  
+ltst = (((lmst+eot) * 12.d0/!dpi) + 24.d0) mod 24.d0           ; someday=today...  but with a fix to prevent negative local times
 ls   = ls * r2d
 
 endelse
@@ -375,7 +376,7 @@ endif
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 oname = sp.run_number+'_preprocessed.sav'
-save,sp,rho,cap,kon,nl,z,dz,ci,vva,vvb,nt,tim,dt,ls,ltst,swf,swf2,swf2f,lwf,cs2,cs2f,t_ice,t,ot,ts,mco2,sin_dec,sol_dist,filename=oname
+save,sp,rho,cap,kon,nl,z,dz,ci,vva,vvb,nt,tim,dt,ls,ltst,swf,swf2,swf2f,lwf,cs2,cs2f,t_ice,t,ot,ts,mco2,sin_dec,sol_dist,cos_i,az,filename=oname
 print,'Model input file saved as: '+oname
 
 return,oname
