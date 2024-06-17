@@ -95,15 +95,22 @@ save,sp,filename     =  sp.run_number+'_parameters.sav'
 ;
 ; Use the thermal model results to update radiation
 ;
+.reset_session
+
+results_flat='steepscarp_MY33_83.8N_235E_flat_results.sav'
 restore, results_flat
 
-alb = rebin([0.15],n_elements(mc))
-alb(where(mc GT 0)) = 0.65
+; lsubs, solarAZ, UMU0 available, setup Albedo, Emissivity, Temperature
 
-emm = rebin([1.0],n_elements(mc))
-emm(where(mc GT 0)) = 0.9
+alb = rebin([sp.albedo],n_elements(mc))
+alb(where(mc GT 0)) = sp.frost_albedo
+
+emm = rebin([sp.emissivity],n_elements(mc))
+emm(where(mc GT 0)) = sp.frost_emissivity
 
 temp = itt(*,0)
+
+
 
 rdfits_struct,"../pickle/DISORT_MCD_MY33_83.8N_235E_S70A225.fits",pp
 thermal      = transpose(pp.im1)
@@ -115,6 +122,13 @@ i_emm        = pp.im5
 ; Assume unfrosted for interpolation and overwrite with frosted values later
 
 help,reform(thermal(*,*,2))
+
+v_ls   = (interpol(findgen(n_elements(i_ls)),i_ls,ls)       )>0<n_elements(i_ls)
+v_temp = (interpol(findgen(n_elements(i_temp)),i_temp,temp) )>0<n_elements(i_temp)
+v_emm  = (interpol(findgen(n_elements(i_emm)),i_emm,emm)    )>0<n_elements(i_emm)
+
+thermal_i = interpolate(thermal,v_ls,v_temp,v_emm)
+
 
 
 vf = where(i_emm EQ 0.9)
