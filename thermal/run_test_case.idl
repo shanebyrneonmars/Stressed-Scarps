@@ -105,9 +105,21 @@ emm(where(mc GT 0)) = 0.9
 
 temp = itt(*,0)
 
-rdfits_struct,"../radiative_transfer/new1.fits",pp
+rdfits_struct,"../pickle/DISORT_MCD_MY33_83.8N_235E_S70A225.fits",pp
 thermal      = transpose(pp.im1)
 flat_thermal = transpose(pp.im2)
+i_ls         = pp.im3
+i_temp       = pp.im4
+i_emm        = pp.im5
+
+; Assume unfrosted for interpolation and overwrite with frosted values later
+
+help,reform(thermal(*,*,2))
+
+
+vf = where(i_emm EQ 0.9)
+
+
 
 interpol_coordinates = [ls],
 
