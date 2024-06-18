@@ -100,17 +100,22 @@ save,sp,filename     =  sp.run_number+'_parameters.sav'
 results_flat='steepscarp_MY33_83.8N_235E_flat_results.sav'
 restore, results_flat
 
+; 
 ; lsubs, solarAZ, UMU0 available, setup Albedo, Emissivity, Temperature
+vf = where(mc GT 0,COMPLEMENT=vnf)
 
 alb = rebin([sp.albedo],n_elements(mc))
-alb(where(mc GT 0)) = sp.frost_albedo
+alb[vf] = sp.frost_albedo
 
 emm = rebin([sp.emissivity],n_elements(mc))
-emm(where(mc GT 0)) = sp.frost_emissivity
+emm[vf] = sp.frost_emissivity
 
-temp = itt(*,0)
+temp = itt[*,0]
 
 
+;
+; Read DISORT interpolation Tables.
+;
 
 rdfits_struct,"../pickle/DISORT_MCD_MY33_83.8N_235E_S70A225.fits",pp
 thermal      = transpose(pp.im1)
@@ -118,27 +123,52 @@ flat_thermal = transpose(pp.im2)
 i_ls         = pp.im3
 i_temp       = pp.im4
 i_emm        = pp.im5
+i_az         = pp.im6
+i_umu0       = pp.im7
+i_alb        = pp.im8
 
-; Assume unfrosted for interpolation and overwrite with frosted values later
-
-help,reform(thermal(*,*,2))
-
+;
+; Thermal fluxes interpolation
+;
 v_ls   = (interpol(findgen(n_elements(i_ls)),i_ls,ls)       )>0<n_elements(i_ls)
 v_temp = (interpol(findgen(n_elements(i_temp)),i_temp,temp) )>0<n_elements(i_temp)
 v_emm  = (interpol(findgen(n_elements(i_emm)),i_emm,emm)    )>0<n_elements(i_emm)
 
-thermal_i = interpolate(thermal,v_ls,v_temp,v_emm)
+thermal_i      = interpolate(thermal,     v_ls,v_temp,v_emm)
+flat_thermal_i = interpolate(flat_thermal,v_ls,v_temp,v_emm)
+
+;
+; Visible fluxes interpolation
+;
+v_az   = (interpol(findgen(n_elements(i_az)),  i_az,  az    ))>0<n_elements(i_az)
+v_umu0 = (interpol(findgen(n_elements(i_umu0)),i_umu0,cosi_i))>0<n_elements(i_umu0)
+v_az   = (interpol(findgen(n_elements(i_alb)), i_alb, alb   ))>0<n_elements(i_alb)
+
+visible_i       = interpolate(visible[*,*,*,0],     v_ls,v_az,v_umu0)
+flat_visible_i  = interpolate(flat_visible[*,*,*,0],v_ls,v_az,v_umu0)
+visible_if      = interpolate(visible[*,*,*,2],     v_ls,v_az,v_umu0)
+flat_visible_if = interpolate(flat_visible[*,*,*,2],v_ls,v_az,v_umu0)
+
+visible_i[vf]      = visible_if[vf]
+flat_visible_i[vf] = flat_visible_if[vf]
+
+;
+;
+;
+preprocessed_flat = sp.run_number+'_preprocessed.sav'
+restore,preprocessed_flat
+
+swf = flat_visible_i
+lwf = flat_thermal_i
+save,sp,rho,cap,kon,nl,z,dz,ci,vva,vvb,nt,tim,dt,ls,ltst,swf,swf2,swf2f,lwf,cs2,cs2f,t_ice,t,ot,ts,mco2,sin_dec,sol_dist,cos_i,az,filename=oname
+
+old_temp = temp
+results_flat = thermal_model_v07(preprocessed_flat)
+restore, results_flat
+temp = itt[]*,0]
 
 
-
-vf = where(i_emm EQ 0.9)
-
-
-
-interpol_coordinates = [ls],
-
-
-
+; Compare old_temp and temp
 
 
 end

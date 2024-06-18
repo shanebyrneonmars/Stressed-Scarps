@@ -7,6 +7,7 @@ function preprocess_thermal_model,sp
 ;12/1/2015 frame_name is now IAU_+body_name, added non-spice parameters for Pluto, Umbriel and Vesta
 ;1/31/2016 added 'CUSTOM' body for self defined orbits in sp.orbit - note there's problem here in that 'CUSTOM' bodies will use a martian atmosphere (can be disabled with the sp.frost_switch variable)
 ;1/23/2017 Added equation-of-time calculation to update LMST to LTST (including mars-specific refinement). Fixed minor bug in the eccentric-anomaly calculation (that was having no negative effects).
+;6/14/2024 Fixed a bug in the EOT adjustment of LTST (some negative local times mistakenly resulted)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Restore run parameters and calculate model inputs
