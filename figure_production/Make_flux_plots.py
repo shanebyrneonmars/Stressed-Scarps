@@ -52,7 +52,7 @@ from scipy.interpolate import interpn
 #
 lsubs    = np.arange(0, 361, 30)
 fnames   = ['../pickle/DISORT_THERMAL_MCD_MY33_83.8N_235E_LSUBS_' + f"{item:03}" + '.pkl' for item in lsubs]
-vnames   = ['../pickle/DISORT_THERMAL_MCD_MY33_83.8N_235E_LSUBS_' + f"{item:03}" + '.pkl' for item in lsubs]
+vnames   = ['../pickle/DISORT_VIS_MCD_MY33_83.8N_235E_LSUBS_' + f"{item:03}" + '.pkl' for item in lsubs]
 
 slope    = np.deg2rad(70.0)
 aspect   = np.deg2rad(225.0)

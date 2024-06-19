@@ -126,6 +126,8 @@ i_emm        = pp.im5
 i_az         = pp.im6
 i_umu0       = pp.im7
 i_alb        = pp.im8
+vis          = transpose(pp.im9)
+flat_vis     = transpose(pp.im10)
 
 ;
 ; Thermal fluxes interpolation
@@ -141,16 +143,20 @@ flat_thermal_i = interpolate(flat_thermal,v_ls,v_temp,v_emm)
 ; Visible fluxes interpolation
 ;
 v_az   = (interpol(findgen(n_elements(i_az)),  i_az,  az    ))>0<n_elements(i_az)
-v_umu0 = (interpol(findgen(n_elements(i_umu0)),i_umu0,cosi_i))>0<n_elements(i_umu0)
-v_az   = (interpol(findgen(n_elements(i_alb)), i_alb, alb   ))>0<n_elements(i_alb)
+v_umu0 = (interpol(findgen(n_elements(i_umu0)),i_umu0,cos_i ))>0<n_elements(i_umu0)
+v_alb  = (interpol(findgen(n_elements(i_alb)), i_alb, alb   ))>0<n_elements(i_alb)
 
-visible_i       = interpolate(visible[*,*,*,0],     v_ls,v_az,v_umu0)
-flat_visible_i  = interpolate(flat_visible[*,*,*,0],v_ls,v_az,v_umu0)
-visible_if      = interpolate(visible[*,*,*,2],     v_ls,v_az,v_umu0)
-flat_visible_if = interpolate(flat_visible[*,*,*,2],v_ls,v_az,v_umu0)
+visible_i       = interpolate(vis[*,*,*,0],     v_ls,v_az,v_umu0)
+flat_visible_i  = interpolate(flat_vis[*,*,*,0],v_ls,v_az,v_umu0)
+visible_if      = interpolate(vis[*,*,*,2],     v_ls,v_az,v_umu0)
+flat_visible_if = interpolate(flat_vis[*,*,*,2],v_ls,v_az,v_umu0)
 
 visible_i[vf]      = visible_if[vf]
 flat_visible_i[vf] = flat_visible_if[vf]
+
+visible_i(where(cos_i LT 0)) = 0.d0
+flat_visible_i(where(cos_i LT 0)) = 0.d0
+
 
 ;
 ;
@@ -160,15 +166,26 @@ restore,preprocessed_flat
 
 swf = flat_visible_i
 lwf = flat_thermal_i
-save,sp,rho,cap,kon,nl,z,dz,ci,vva,vvb,nt,tim,dt,ls,ltst,swf,swf2,swf2f,lwf,cs2,cs2f,t_ice,t,ot,ts,mco2,sin_dec,sol_dist,cos_i,az,filename=oname
+save,sp,rho,cap,kon,nl,z,dz,ci,vva,vvb,nt,tim,dt,ls,ltst,swf,swf2,swf2f,lwf,cs2,cs2f,t_ice,t,ot,ts,mco2,sin_dec,sol_dist,cos_i,az,filename=preprocessed_flat
 
 old_temp = temp
 results_flat = thermal_model_v07(preprocessed_flat)
 restore, results_flat
-temp = itt[]*,0]
+temp = itt[*,0]
 
 
 ; Compare old_temp and temp
+plot,ls,temp,ps=3
+oplot,ls,old_temp,color=255,ps=3
+
+
+;
+; NOW ALTER THE SLOPING SURFACE RUN
+;
+
+
+steepscarp_MY33_83.8N_235E_S70A225_parameters.sav
+
 
 
 end

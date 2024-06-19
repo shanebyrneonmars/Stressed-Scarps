@@ -45,40 +45,40 @@ for i,loadname in enumerate(flat_thermal_fname):
     flat_thermal[i,:,:] = diffuse[0,:,:]
 
 
-# for i,loadname in enumerate(vis_fname):        
-#     with open(loadname, 'rb') as f:
-#         data = pickle.load(f)
-#     if isinstance(data, dict):
-#         for key in data:
-#             globals()[key] = data[key]
-#     del f,key,data
+for i,loadname in enumerate(vis_fname):        
+    with open(loadname, 'rb') as f:
+        data = pickle.load(f)
+    if isinstance(data, dict):
+        for key in data:
+            globals()[key] = data[key]
+    del f,key,data
 
-#     if i==0:
-#         NAZ, NINC, NALB = diffuse.shape
-#         vis = np.zeros((NLS, NAZ, NINC, NALB))
-#         vis_axes = (lsubs, solarAZ_i, UMU0_i, ALB_i)
+    if i==0:
+        NAZ, NINC, NALB = diffuse.shape
+        vis = np.zeros((NLS, NAZ, NINC, NALB))
+        vis_axes = (lsubs, solarAZ_i, UMU0_i, ALB_i)
 
-#     vis[i,:,:,:] = diffuse
-#     for j in range(NALB):
-#         vis[i,:,:,j] = vis[i,:,:,j] + direct
+    vis[i,:,:,:] = diffuse
+    for j in range(NALB):
+        vis[i,:,:,j] = vis[i,:,:,j] + direct
 
 
-# for i,loadname in enumerate(flat_vis_fname):        
-#     with open(loadname, 'rb') as f:
-#         data = pickle.load(f)
-#     if isinstance(data, dict):
-#         for key in data:
-#             globals()[key] = data[key]
-#     del f,key,data
+for i,loadname in enumerate(flat_vis_fname):        
+    with open(loadname, 'rb') as f:
+        data = pickle.load(f)
+    if isinstance(data, dict):
+        for key in data:
+            globals()[key] = data[key]
+    del f,key,data
 
-#     if i==0:
-#         NAZ, NINC, NALB = diffuse.shape
-#         flat_vis = np.zeros((NLS, NAZ, NINC, NALB))
-#         flat_vis_axes = (lsubs, solarAZ_i, UMU0_i, ALB_i)
+    if i==0:
+        NAZ, NINC, NALB = diffuse.shape
+        flat_vis = np.zeros((NLS, NAZ, NINC, NALB))
+        flat_vis_axes = (lsubs, solarAZ_i, UMU0_i, ALB_i)
 
-#     vis[i,:,:,:] = diffuse
-#     for j in range(NALB):
-#         flat_vis[i,:,:,j] = vis[i,:,:,j] + direct
+    vis[i,:,:,:] = diffuse
+    for j in range(NALB):
+        flat_vis[i,:,:,j] = vis[i,:,:,j] + direct
 
 
 sname = thermal_fname[0].replace('THERMAL_', '').replace('_LSUBS_' + f"{lsubs[0]:03}",'')
@@ -87,11 +87,11 @@ with open(sname, 'wb') as f:
         'thermal': thermal,
         'thermal_axes': thermal_axes,
         'flat_thermal': flat_thermal,
-        'flat_thermal_axes': flat_thermal_axes
-        # 'vis': vis,
-        # 'vis_axes': vis_axes,
-        # 'flat_vis': flat_vis,
-        # 'flat_vis_axes': flat_vis_axes
+        'flat_thermal_axes': flat_thermal_axes,
+         'vis': vis,
+         'vis_axes': vis_axes,
+         'flat_vis': flat_vis,
+         'flat_vis_axes': flat_vis_axes
     }, f)
 
 
@@ -105,5 +105,10 @@ image_hdu2 = fits.ImageHDU(data=flat_thermal, name="Thermal flux on flat surface
 image_hdu3 = fits.ImageHDU(data=thermal_axes[0].astype(float), name="Ls")
 image_hdu4 = fits.ImageHDU(data=thermal_axes[1].astype(float), name="Temperature")
 image_hdu5 = fits.ImageHDU(data=thermal_axes[2].astype(float), name="Emmissivity")
-hdul = fits.HDUList([empty_primary, image_hdu1, image_hdu2, image_hdu3, image_hdu4, image_hdu5])
+image_hdu6 = fits.ImageHDU(data=vis_axes[1].astype(float), name="Solar Azimuth")
+image_hdu7 = fits.ImageHDU(data=vis_axes[2].astype(float), name="Cos of Solar Incidence")
+image_hdu8 = fits.ImageHDU(data=vis_axes[2].astype(float), name="Albedo")
+image_hdu9 = fits.ImageHDU(data=vis,      name="Visible flux on slope")
+image_hdu10= fits.ImageHDU(data=flat_vis, name="Visible flux on flat surface")
+hdul = fits.HDUList([empty_primary, image_hdu1, image_hdu2, image_hdu3, image_hdu4, image_hdu5, image_hdu6, image_hdu7, image_hdu8, image_hdu9, image_hdu10])
 hdul.writeto(sname.replace('.pkl', '.fits'),overwrite=True)
