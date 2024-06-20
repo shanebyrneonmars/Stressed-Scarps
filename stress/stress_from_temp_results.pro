@@ -78,7 +78,7 @@ function stress_from_temp_results, fname, d = d
   if (n_elements(ci) eq 1) then dz0 = total(d_zz[*, ci[0] : *], 2) ; Sum of vertical displacements over all layers - this is the surface displacement
   if (n_elements(ci) gt 1) then dz0 = total(d_zz[*, ci[1] : *], 2) ; Sum of vertical displacements over all layers - this is the surface displacement
 
-  ffname = 'stess_' + string(round(d * 1d6), format = '(I04)') + '_' + fname
+  ffname = 'stess_' + string(round(d * 1d6), format = '(I04)') + '_' + (strsplit(fname,'/',/extract))[-1]
 
   save, ci, dz, itt, ls, ltst, mc, sav_allt, sp, z, lss, sig, dz0, filename = ffname
 

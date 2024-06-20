@@ -4,13 +4,16 @@ for di = 0,2 do begin
 
 d = dii(di)
 
-for j=30.d0,80.d0,5.d0 do begin
-for i=90.d0,270.d0,15.0d0 do begin
-
-fname='steepscarp_'+string(j,format='(I02)')+'_'+string(i,format='(I03)')+'_results.sav'
+; for j=30.d0,80.d0,5.d0 do begin
+; for i=90.d0,270.d0,15.0d0 do begin
+; fname='steepscarp_'+string(j,format='(I02)')+'_'+string(i,format='(I03)')+'_results.sav'
 
 ;fname = '/Volumes/Free/shane/steep_scarp3/steepscarp_70_225_results.sav'
 ;d = 2000d-6
+
+fname  = '../thermal/steepscarp_MY33_83.8N_235E_S70A225_results.sav'
+ffname = 'stess_'+string(round(d*1d6),format='(I04)')+'_'+(strsplit(fname,'/',/extract))[-1]        
+
 
 restore,fname
 
@@ -18,7 +21,6 @@ sav_allt = double(sav_allt)
 dT_dt = -0.5d0*( (shift(sav_allt,1,0)-sav_allt)/sp.dt + (sav_allt - shift(sav_allt,-1,0))/sp.dt )
 t0    = rebin(transpose(mean(sav_allt,dimension=1)),n_elements(ls),n_elements(z))
 lss = ((2.0*ls(0) - ls(1) - ls(-1))* dindgen(n_elements(ls))/(n_elements(ls)-1.d0) + ls +360.d0) mod 360.d0     
-
 
 E     = 2.339d10 - 6.48d7*sav_allt
 dE_dT =          - 6.48d7
@@ -61,14 +63,12 @@ d_sig_dt = rebin([1d0],(size(sav_allt))[1],(size(sav_allt))[2]) ; Avoid populati
 
 for jj = 0L,4L do begin                                         ; Initial Stress state is unknown so run for a few years to close the loop
   for ii=0L,(size(sav_allt))[1]-1L do begin
-
    ss = sig(ii-1L,*)
-  ass = abs(ss) 
+   ass = abs(ss) 
    strainrate_pf = e_diffv(ii-1L,*)*ass^nm1(0) + e_diffb(ii-1L,*)*ass^nm1(1) + 1.d0/(1.d0/(e_basal(ii-1L,*)*ass^nm1(2)) + 1.d0/(e_gbs(ii-1L,*)*ass^nm1(3)) ) + e_disl(ii-1L,*)*ass^nm1(4)
 
    d_sig_dt(ii-1L,*)  = aa(ii-1L,*)*ss  +  bb(ii-1L,*)  -  strainrate_pf*ss   ; 0 = e_thermal + e_elastic + e_viscous (Mellon's answer would have used -bb)
    sig(ii,*) = ss + d_sig_dt(ii-1L,*)*sp.dt
-
   endfor
  print,'Stress, year: '+strcompress(jj,/re)
 endfor
@@ -86,13 +86,12 @@ d_z  = e_z * sp.dt * rebin(transpose(dz),(size(e_z))[1],(size(e_z))[2])   ; Vert
 d_zz = total(d_z,1,/cumulative)                                           ; Vertical displacement cumulative
 dz0  = total(d_zz(*,ci(1):*),2)                                           ; Sum of vertical displacements over all layers - this is the surface displacement
 
-ffname = 'stess_'+string(round(d*1d6),format='(I04)')+'_'+fname
 
 save,ci,dz,itt,ls,ltst,mc,sav_allt,sp,z,lss,sig,dz0,filename = ffname
 
 
-endfor
-endfor
+;endfor
+;endfor
 endfor
 end
 
