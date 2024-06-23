@@ -35,14 +35,14 @@ function stress_from_temp_results, fname, d = d
   e_diffv = 3.d0 ^ (-(n[0] + 1.d0) / 2.d0) * a[0] * d ^ p[0] * exp(-q[0] / (r * sav_allt)) / sav_allt ; Calculate strain rate coefficients that are temperature dependant
   e_diffb = 3.d0 ^ (-(n[1] + 1.d0) / 2.d0) * a[1] * d ^ p[1] * exp(-q[1] / (r * sav_allt)) / sav_allt
   e_basal = 3.d0 ^ (-(n[2] + 1.d0) / 2.d0) * a[2] * d ^ p[2] * exp(-q[2] / (r * sav_allt))
-  e_gbs = 3.d0 ^ (-(n[3] + 1.d0) / 2.d0) * a[3] * d ^ p[3] * exp(-q[3] / (r * sav_allt))
-  e_disl = 3.d0 ^ (-(n[4] + 1.d0) / 2.d0) * a[4] * d ^ p[4] * exp(-q[4] / (r * sav_allt))
+  e_gbs   = 3.d0 ^ (-(n[3] + 1.d0) / 2.d0) * a[3] * d ^ p[3] * exp(-q[3] / (r * sav_allt))
+  e_disl  = 3.d0 ^ (-(n[4] + 1.d0) / 2.d0) * a[4] * d ^ p[4] * exp(-q[4] / (r * sav_allt))
 
   e_diffv = E / (1.d0 - mu) * e_diffv
   e_diffb = E / (1.d0 - mu) * e_diffb
   e_basal = E / (1.d0 - mu) * e_basal
-  e_gbs = E / (1.d0 - mu) * e_gbs
-  e_disl = E / (1.d0 - mu) * e_disl
+  e_gbs   = E / (1.d0 - mu) * e_gbs
+  e_disl  = E / (1.d0 - mu) * e_disl
 
   aa = 1.d0 / E * dE_dT * dT_dt
   bb = -E / (1.d0 - mu) * (dalp_dT * (sav_allt - t0) + alp) * dT_dt
@@ -57,7 +57,7 @@ function stress_from_temp_results, fname, d = d
       ass = abs(ss)
       strainrate_pf = e_diffv[ii - 1l, *] * ass ^ nm1[0] + e_diffb[ii - 1l, *] * ass ^ nm1[1] + 1.d0 / (1.d0 / (e_basal[ii - 1l, *] * ass ^ nm1[2]) + 1.d0 / (e_gbs[ii - 1l, *] * ass ^ nm1[3])) + e_disl[ii - 1l, *] * ass ^ nm1[4]
 
-      d_sig_dt[ii - 1l, *] = aa[ii - 1l, *] * ss + bb[ii - 1l, *] - strainrate_pf * ss ; 0 = e_thermal + e_elastic + e_viscous (Mellon's answer would have used -bb)
+      d_sig_dt[ii - 1l, *] = aa[ii - 1l, *] * ss + bb[ii - 1l, *] - strainrate_pf * ss   ; 0 = e_thermal + e_elastic + e_viscous (Mellon's answer would have used -bb)
       sig[ii, *] = ss + d_sig_dt[ii - 1l, *] * sp.dt
     endfor
     print, 'Stress, year: ' + strcompress(jj, /re)

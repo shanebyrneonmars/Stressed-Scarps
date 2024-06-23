@@ -14,7 +14,7 @@ sp=return_blank_thermal_model_structure()
 
 sp.body_name = 'MARS'                      ; Location and geometry of surface
 sp.latitude  = 83.8
-sp.longitude = 235.5
+sp.longitude = 235.0
 sp.slope     = 0.0
 sp.aspect    = 0.0
 sp.elevation = -4460.0
@@ -202,6 +202,16 @@ results_slope = thermal_model_v07(preprocessed_slope)
 restore, results_slope
 
 plot,ls,itt[*,0],ps=3
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+.reset_session
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+cd,'../stress'
+fn = stress_from_temp_results('../thermal/steepscarp_MY33_83.8N_235E_S70A225_results.sav')
+restore,fn
 
 
 
