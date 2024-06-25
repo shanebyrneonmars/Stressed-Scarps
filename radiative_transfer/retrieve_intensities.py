@@ -11,11 +11,11 @@ import pandas as pd
 from pyRT_DISORT_MCD_utils import process_mcd_output_for_DISORT, read_mcd_output
 start_time = time.time()
 rootfolder = '/Users/shane/Desktop/Avalanche/Stressed-Scarps/'
-lsubs_i    = np.arange(0, 361, 30)
+lsubs_i    = np.arange(15, 346, 30)
 NLS        = lsubs_i.shape[0]
 
 for ils in range(NLS):
-    PLANK        = False               # False to do the scattering solution only, no emission. True to include emission
+    PLANK        = False              # False to do the scattering solution only, no emission. True to include emission
     MCD          = True               # True to use MCD output, False to use a simple exponential atmosphere
     lsubs        = lsubs_i[ils]       # Solar longitude
     mcd_fname    = rootfolder+'datafiles/MCD_Output/MCD_MY33_83.8N_235E_PTDI.txt'
