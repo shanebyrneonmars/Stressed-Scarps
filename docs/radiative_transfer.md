@@ -1,5 +1,11 @@
-# Radiative Transfer
+# Avalanche Scarp Stress Calculation Overview
+Thermoelastic stress in these scarps can cause cracks and sheeting joints that result in exfoliation of slab-like ice blocks. Simulations of this stress can be broken into three main sections:
+1. Radiative transfer of the martian atmosphere to determine the energy delivered to the surface.
+2. Diffusion of thermal energy in the subsurface to determine how the surface temperature evolves.
+3. Thermal expansion and contraction of the ice combined with viscous processes that leads to surface-parallel stress.
 
+
+## Radiative Transfer
 Radiative transfer is key to this project as the solar zenith angles and surface slopes are both high. Incidence angles on the slopes can therefore be close to zero, while the atmospheric path length can be extremely long (>20 times the value from looking vertically for a typical atmospheric scale height on a planet the size of Mars). We use DISORT 4.0.99 to perform radiative transfer calculations accessed through the pyRT.DISORT python library of Kyle Connour[^pyrt]. We operate DISORT in pseudospherical mode due to the prevelance of high solar zenith angles and do the visible and thermal calculations seperately. 
 
 [^pyrt]: The github repository for this library can be found at https://github.com/kconnour/pyRT_DISORT/
@@ -14,7 +20,7 @@ We retrieve these quantities from the Mars Climate Database (MCD)[^mcd] every 15
 
 Optical properties of dust and water Ice Aerosols come from FITS files provided by Mike Wolff[^wolff_aerosols].  These files describe the extinction and scattering cross-sections (single scattering albedo is available from the ratio of these) as well as the phase function moments as a function of particle size and wavelength. Functions provided with pyrt_DISORT combine these optical properties with the MCD outputs of optical depths, vertical distributions of aerosol mixing ratios, and a choice of particle size (we use reff of 1.5 and 2 microns for dust and water ice). Optical depth, single scattering albedo, and particle phase function versus height are calculated and passed to DISORT.
 
-[^wolff_aerosols]: These were published as
+[^wolff_aerosols]: Available at https://gemelli.spacescience.org/~wolff/files/aerosols/
 
 DISORT simulations are done for many (several dozen) wavelengths over the solar or martian blackbody curve (depending on whether we're doing the visible or thermal simulation) and output radiances/fluxes from each separate wavelength co-added. DISORT output includes the direct beam irradiance (in the visible case) as well as diffuse radiance from directions provided as DISORT input. We obtain diffuse DISORT radiances at 360 azimuth angles and 180 zenith angles (from zenith to nadir). Note radiances from below horizonal are from surface scattering/emission, which is invisible to flat surfaces, but will be important for sloping surfaces. These results are generated for many solar zenith angles (or surface temperatures), and several albedo (or emissivity) values. Although all solar azimuths and zenith angles are simulated, the results are only accurate for the Ls of the MCD results used. We loop though these seasons (every 15° of Ls) to update the atmospheric description and adjust the solar flux by the changing Mars-Sun distance. 
 
@@ -25,7 +31,7 @@ Additional python scripts take knowledge of the surface slope and aspect and tur
 Note, when using these tables it is the albedo, emissivity, and temperature of the flat terrain that should be used, even when figuring out the flux incident onto the sloping facet.  The surrounding infinite flat plain affects the atmospheric radiation and any sloping facet; however, the sloping facet is small by comparison and does not affect the atmosphere or contribute significant flux to the flat terrain.
 
 ## Combining MCD, DISORT, and the IDL thermal model
-The IDL thermal model provides the solar azimuth/zeith angle and, for the flat surface, the temperature and albedo/emissivity (which changes seasonally as CO$_2$ frost comes and goes).  Using these values we can interpolate from the two lookup tables described at the end of the Raditive transfer section to get the flux incident on the sloping facet.  
+The IDL thermal model provides the solar azimuth/zeith angle and, for the flat surface, the temperature and albedo/emissivity (which changes seasonally as CO<sub>2</sub> frost comes and goes).  Using these values we can interpolate from the two lookup tables described at the end of the Raditive transfer section to get the flux incident on the sloping facet.  
 
 Getting this thermal solution for the flat facet is problematic as we don't know the temperatures and albedo/emissiivty apriori and those quantities affect the radiation incident on the flat terrain. We iterate to converge on the correct answwer.  Fluxes on the flat terrain are first calculated with some simple atmospheric assumuptions, the resulting temperatures and frost behavior are used to update the thermal/visible fluxes and the temperature simulation run again etc... Typically itterating 4-5 times is enough to have temperatures repeat to within a fraction of a degree at all times of year.
 
