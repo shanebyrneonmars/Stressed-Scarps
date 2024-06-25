@@ -14,7 +14,7 @@ The atmophere is described by several parameters that vary with season that can 
 * Pressure, temperature, dust mixing ratio, and ice mixing ratio as a function of height
 * Column-integrated optical depths of dust and ice.
 
-We retrieve these quantities from the Mars Climate Database (MCD)[^mcd] every 15° of Ls and (in the case of the first group above) at 35 vertical levels up to heights of 50km. This retrieval is done for a specific geographic location and martian year. Dust optical depths are returned as extinction (not absorption) optical depths specific to the surface pressure at that point in the visible (we divide by 2 to convert to the value at 9.3 um). Water ice is returned as kg m<sup>-2</sup>, which we convert to optical depth by assuming non-overlapping particles and a Q<sub>ext</sub> of 2.62 at 9.3 &mu m.
+We retrieve these quantities from the Mars Climate Database (MCD)[^mcd] every 15° of Ls and (in the case of the first group above) at 35 vertical levels up to heights of 50km. This retrieval is done for a specific geographic location and martian year. Dust optical depths are returned as extinction (not absorption) optical depths specific to the surface pressure at that point in the visible (we divide by 2 to convert to the value at 9.3 &mu;m). Water ice is returned as kg m<sup>-2</sup>, which we convert to optical depth by assuming non-overlapping particles and a Q<sub>ext</sub> of 2.62 at 9.3 &mu;m.
 
 [^mcd]: Version 6.1 of the Mars Climate database can be found at https://www-mars.lmd.jussieu.fr/ 
 
