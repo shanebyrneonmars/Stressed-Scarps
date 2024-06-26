@@ -1,9 +1,10 @@
-# Avalanche Scarp Stress Calculation Overview
+# Avalanche Scarp Stress Calculation Outline
 Thermoelastic stress in these scarps can cause cracks and sheeting joints that result in exfoliation of slab-like ice blocks. Simulations of this stress can be broken into three main sections:
 1. Radiative transfer of the martian atmosphere to determine the energy delivered to the surface.
 2. Diffusion of thermal energy in the subsurface to determine how the surface temperature evolves.
 3. Thermal expansion and contraction of the ice combined with viscous processes that leads to surface-parallel stress.
 
+The general outline of what happens at each step is described here. The [workflow](Workflow.md "Workflow") document contains details of how to implement it.
 
 ## Radiative Transfer
 Radiative transfer is key to this project as the solar zenith angles and surface slopes are both high. Incidence angles on the slopes can therefore be close to zero, while the atmospheric path length can be extremely long (>20 times the value from looking vertically for a typical atmospheric scale height on a planet the size of Mars). We use DISORT 4.0.99 to perform radiative transfer calculations accessed through the pyRT.DISORT python library of Kyle Connour[^pyrt]. We operate DISORT in pseudospherical mode due to the prevalence of high solar zenith angles and do the visible and thermal calculations separately. 
@@ -60,7 +61,3 @@ We follow the approach of Mellon[^Mellon] to solve for the time varying stress i
 [^Goldsby]: Several stress-dependent deformation mechanisms are combined. See: Goldsby, D.L., Kohlstedt, D.L., 2001. Superplastic deformation of ice: Experimental observations. J. Geophys. Res. 106, 11017.
 
 The thermal model above output a variable called `sav_allt` (temperatures at all times and depths) that we will use to calculate expansion and contraction of the ice and the stress this causes. Each depth is independently calculated since the surface-parallel strain is zero. The zero-stress baseline temperature is calculated to be the  annual-average temperature at each depth.
-
-## Filename conventions
-The model parameter structure (`sp`) has a field called (`sp.run_number`) that will be applied to exported files at various steps.  It's useful to give this string an informative name 
-
