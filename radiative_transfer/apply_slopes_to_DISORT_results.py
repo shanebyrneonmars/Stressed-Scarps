@@ -11,7 +11,7 @@ from pyRT_DISORT_MCD_utils import MakeFluxLookupTable
 #
 # Setup Ls values and all the filenames to consolidate into four tables
 #
-lsubs    = np.arange(0, 361, 30)
+lsubs    = np.arange(15, 346, 30)
 fnames   = ['../pickle/DISORT_THERMAL_MCD_MY33_83.8N_235E_LSUBS_' + f"{item:03}" + '.pkl' for item in lsubs]
 vnames   = ['../pickle/DISORT_VIS_MCD_MY33_83.8N_235E_LSUBS_' + f"{item:03}" + '.pkl' for item in lsubs]
 
