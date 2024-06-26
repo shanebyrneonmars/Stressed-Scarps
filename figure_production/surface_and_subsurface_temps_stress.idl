@@ -1,0 +1,62 @@
+; Plot surface and subsurface results for either Temperature os Stress
+; Select one of these options....
+
+ttname = "Stress (MPa)"
+;ttname = "Temperature (K)"
+
+; Select a results file to plot
+restore,'../stress/stress_1000_steepscarp_MY33_83.8N_235E_S70A225_results.sav'
+
+ict=0L                                         ; Layer at which the ice table begins
+v  = (where(ls EQ min(ls)))[0]
+tt = reverse(shift(sig(*,ict:*)/1d6,-v,0),2)   ; only ice stresses shifted so Ls=0 is the start of the array, reversed in the depth direction
+zz = reverse(z(ict:*))
+lls = shift(ls,-v)
+itt = shift(itt,-v)
+
+if (ttname EQ "Stress (MPa)"   ) then tt = reverse(shift(sig(*,ict:*)/1d6 ,-v,0),2)   ; only ice stresses shifted so Ls=0 is the start of the array, reversed in the depth direction
+if (ttname EQ "Temperature (K)") then tt = reverse(shift(sav_allt(*,ict:*),-v,0),2)   ; only ice stresses shifted so Ls=0 is the start of the array, reversed in the depth direction
+
+
+dd = dindgen((size(tt))[1]) + 0.5
+z2 = dindgen((size(tt))[2])
+
+tn = [(dindgen(9)+1.0)/10.0,(dindgen(9)+1.0)/100.0,dindgen(9)+1.0,10.0,20.0,30.d0]
+tv = interpol(z2,zz,tn) 
+tn = strarr(n_elements(tv))
+tn(0) = '0.01'
+tn(9) = '0.1'
+tn(18) = '1.0'
+tn(27) = '10.0'
+
+ttn = indgen(13.0)*30.0
+ttv = interpol(dd,lls,ttn)
+ttn = strcompress(fix(ttn),/re)
+
+iii = image(tt,dd,z2,rgb_table=33, axis_style=0, min_value=floor(min(tt)), max_value=ceil(max(tt)) ,ythick=2,xthick=2,/interpolate,dimensions=[1600,600],margin=[0.1,0.1,0.1,0.1],aspect_ratio=0)
+aax = axis(0,target=iii,location=[0,0],thick=2,title='Sol'  ,axis_range=range(dd),coord_transform=[0.0,sp.dt/88775.d0],tickfont_size=16)
+aaxx = axis(0,target=iii,location=[0,n_elements(z2)],thick=2,title='L$_S$'  ,axis_range=range(dd),coord_transform=[0.0,1.0],tickvalues=ttv,tickname=ttn,major=0,minor=0,tickfont_size=16,textpos=1,tickdir=1)
+aay = axis(1,target=iii,location=[0,0],thick=2,title='Depth (m)',axis_range=range(z2),coord_transform=[0.0,1.0],tickvalues=tv,tickname=reverse(string(tn)),major=0,minor=0,tickfont_size=16)
+aay = axis(1,target=iii,location=[max(dd),0],thick=2,axis_range=range(z2),coord_transform=[0.0,1.0],tickvalues=tv,tickname=reverse(string(tn)),major=0,minor=0,tickfont_size=16,textpos=1,tickdir=1,showtext=0)
+ccc = colorbar(target=iii,thick=2,position=[0.92,0.15,0.94,0.85],title=ttname,font_size=14,font_style=0,ORIENTATION=1, TEXTPOS=1, TAPER=1)
+
+if (ttname EQ "Stress (MPa)"   ) then tt = shift(sig(*,0)/1d6,-v)   ; only ice stresses shifted so Ls=0 is the start of the array, reversed in the depth direction
+if (ttname EQ "Temperature (K)") then tt = itt   ; only ice stresses shifted so Ls=0 is the start of the array, reversed in the depth direction
+
+pp = plot(dd,tt,dimensions=[1600,400], name='Temperature',margin=[0.1,0.15,0.1,0.1])
+pp.xthick=2
+pp.ythick=2
+pp.ytickfont_size=18
+pp.xtickfont_size=18
+pp.ytitle=ttname
+pp.xtitle='L$_{s}$'
+pp.xrange=[0,360]
+pp.yrange=[floor(min(tt)),ceil(max(tt))]
+pp.xtickvalues= ttv
+pp.xtickname=ttn
+pp.xminor=2
+
+pp.save,'~/Desktop/surface_S70A225_'+(strsplit(ttname,' ',/extract))[0]+'.jpg',border=10,resolution=150
+iii.save,'~/Desktop/subsurface_S70A225_'+(strsplit(ttname,' ',/extract))[0]+'.jpg',border=10,resolution=150
+
+

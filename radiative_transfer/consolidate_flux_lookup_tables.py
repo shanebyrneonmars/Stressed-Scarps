@@ -5,7 +5,7 @@ from astropy.io import fits
 #
 # Setup Ls values and all the filenames to consolidate into four tables
 #
-lsubs              = np.arange(0, 361, 30)
+lsubs              = np.arange(0, 361, 15)
 NLS                = lsubs.shape[0]
 thermal_fname      = ['../pickle/DISORT_THERMAL_MCD_MY33_83.8N_235E_LSUBS_' + f"{item:03}" + '_S70A225.pkl' for item in lsubs]
 flat_thermal_fname = ['../pickle/DISORT_THERMAL_MCD_MY33_83.8N_235E_LSUBS_' + f"{item:03}" + '_S00A225.pkl' for item in lsubs]

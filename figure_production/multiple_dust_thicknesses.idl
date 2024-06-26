@@ -1,0 +1,39 @@
+
+
+
+;
+; Plot CO2 frost thicknesses for different dust thicknesses
+;
+
+tt = [10.0,8.0,6.0,4.0,2.0,0.0]
+
+restore,'steepscarp_'+string(fix(tt(0)),format='(I03)')+'mm_results.sav'
+ls(where(ls LT 30)) = ls(where(ls LT 30)) + 360.0
+v = where(ls EQ min(ls))
+pp = plot(shift(ls,-v),shift(mc,-v),dimensions=[800,600],xstyle=1,xrange=[0,360],xtitle='L$_s$',ytitle='CO$_2$ Frost (kg m$^{-2}$)',xthick=2,ythick=2,name=string(fix(tt(0)),format='(I2)')+'mm')
+pp.ytickfont_size=20
+pp.xtickfont_size=20
+pp.ylog=1
+
+restore,'steepscarp_'+string(fix(tt(4)),format='(I03)')+'mm_results.sav'
+ls(where(ls LT 30)) = ls(where(ls LT 30)) + 360.0
+pp2 = plot(shift(ls,-v),shift(mc,-v),name=string(fix(tt(4)),format='(I2)')+'mm',linestyle=2,/overplot)
+
+restore,'steepscarp_'+string(fix(tt(5)),format='(I03)')+'mm_results.sav'
+ls(where(ls LT 30)) = ls(where(ls LT 30)) + 360.0
+pp3 = plot(shift(ls,-v),shift(mc,-v),name=string(fix(tt(5)),format='(I2)')+'mm',linestyle=3,/overplot)
+
+pp.xrange=[340,380]
+pp.yrange=[0.01,1000]
+pp.ytickunits='exponent'
+pp.thick=2
+pp2.thick=2
+pp3.thick=2
+pp.xtickvalues = [340,350,360,370,380]
+pp.xtickname   = strcompress([340,350,360,10,20],/re)
+
+ll = legend(target=[pp,pp2,pp3],position=[375,1],/data)
+ll.font_size=18
+pp.save,'~/Desktop/lag_thickness.jpg',border=10,resolution=150
+
+
