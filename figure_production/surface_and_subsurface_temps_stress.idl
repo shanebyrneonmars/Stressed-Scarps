@@ -1,11 +1,11 @@
 ; Plot surface and subsurface results for either Temperature os Stress
 ; Select one of these options....
 
-ttname = "Stress (MPa)"
-;ttname = "Temperature (K)"
-
-; Select a results file to plot
+ttname_i = ["Temperature (K)","Stress (MPa)"]
 restore,'../stress/stress_1000_steepscarp_MY33_83.8N_235E_S70A225_results.sav'
+
+for tti = 0,1 do begin
+ttname = ttname_i[tti]
 
 ict=0L                                         ; Layer at which the ice table begins
 v  = (where(ls EQ min(ls)))[0]
@@ -33,6 +33,20 @@ ttn = indgen(13.0)*30.0
 ttv = interpol(dd,lls,ttn)
 ttn = strcompress(fix(ttn),/re)
 
+if (ttname EQ "Stress (MPa)") then begin
+ttc = tt
+ttc(*,*) = 0.5
+ttc(where(tt LT -2)) = 0.0
+ttc(where(tt GT 2)) = 1.0
+
+iiii = image(ttc,dd,z2,rgb_table=33, axis_style=0, min_value=0, max_value=1 ,ythick=2,xthick=2,/interpolate,dimensions=[1600,600],margin=[0.1,0.1,0.1,0.1],aspect_ratio=0)
+aax = axis(0,target=iiii,location=[0,0],thick=2,title='Sol'  ,axis_range=range(dd),coord_transform=[0.0,sp.dt/88775.d0],tickfont_size=16)
+aaxx = axis(0,target=iiii,location=[0,n_elements(z2)],thick=2,title='L$_S$'  ,axis_range=range(dd),coord_transform=[0.0,1.0],tickvalues=ttv,tickname=ttn,major=0,minor=0,tickfont_size=16,textpos=1,tickdir=1)
+aay = axis(1,target=iiii,location=[0,0],thick=2,title='Depth (m)',axis_range=range(z2),coord_transform=[0.0,1.0],tickvalues=tv,tickname=reverse(string(tn)),major=0,minor=0,tickfont_size=16)
+aay = axis(1,target=iiii,location=[max(dd),0],thick=2,axis_range=range(z2),coord_transform=[0.0,1.0],tickvalues=tv,tickname=reverse(string(tn)),major=0,minor=0,tickfont_size=16,textpos=1,tickdir=1,showtext=0)
+iiii.save,'~/Desktop/subsurface_S70A225_'+(strsplit(ttname,' ',/extract))[0]+'_cartoon.jpg',border=10,resolution=150
+endif
+
 iii = image(tt,dd,z2,rgb_table=33, axis_style=0, min_value=floor(min(tt)), max_value=ceil(max(tt)) ,ythick=2,xthick=2,/interpolate,dimensions=[1600,600],margin=[0.1,0.1,0.1,0.1],aspect_ratio=0)
 aax = axis(0,target=iii,location=[0,0],thick=2,title='Sol'  ,axis_range=range(dd),coord_transform=[0.0,sp.dt/88775.d0],tickfont_size=16)
 aaxx = axis(0,target=iii,location=[0,n_elements(z2)],thick=2,title='L$_S$'  ,axis_range=range(dd),coord_transform=[0.0,1.0],tickvalues=ttv,tickname=ttn,major=0,minor=0,tickfont_size=16,textpos=1,tickdir=1)
@@ -58,5 +72,8 @@ pp.xminor=2
 
 pp.save,'~/Desktop/surface_S70A225_'+(strsplit(ttname,' ',/extract))[0]+'.jpg',border=10,resolution=150
 iii.save,'~/Desktop/subsurface_S70A225_'+(strsplit(ttname,' ',/extract))[0]+'.jpg',border=10,resolution=150
+
+endfor
+end
 
 
