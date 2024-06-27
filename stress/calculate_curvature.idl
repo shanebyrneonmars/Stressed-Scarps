@@ -1,0 +1,35 @@
+fname = 'DTEPC_036506_2640_036546_2640_A01.IMG'
+openr,1,fname
+z = (assoc(1,fltarr(22292,12413),89168))[0]
+close,1
+
+z2 = z(7501:11000,3501:7000)
+zf = BANDPASS_FILTER(z2, 0.d0, 0.01d0, /gaussian)
+plot,z2(1000,251:3250) 
+oplot,zf(1000,251:3250),color=255
+
+gx  = zf - shift(zf,-1,0)
+gy  = zf - shift(zf,0,-1)
+gxx = gx - shift(gx,-1,0)
+gyy = gy - shift(gy,0,-1)
+gxy = gx - shift(gx,0,-1)
+gyx = gy - shift(gy,-1,0)
+
+; See: https://mathworld.wolfram.com/MeanCurvature.html
+; See: https://mathworld.wolfram.com/GaussianCurvature.html
+; see: https://mathworld.wolfram.com/PrincipalCurvatures.html
+
+K = (gxx * gyy - gxy^2) / ((1.0 + gx^2 + gy^2)^(2))
+H = ((1.0 + gy^2) * gxx - 2.0 * gx * gy * gxy + (1.0 + gx^2) * gyy) / (2.0 * (1.0 + gx^2 + gy^2)^(1.5))
+
+k1 = H + SQRT(h^2 - k)
+k2 = H - SQRT(h^2 - k)
+
+k1 = k1(251:3250,251:3250) ; clip off rubbish edge effects
+k2 = k2(251:3250,251:3250) ; clip off rubbish edge effects
+
+sl = atan(sqrt(gx^2 + gy^2)) ; Slopes
+
+phi = (k1+k2)*(-2d6) - 925.0*3.72*cos(sl)
+tvscl,congrid(phi,500,500)>0<0.1 
+
