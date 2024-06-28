@@ -223,9 +223,19 @@ plot,ls,itt[*,0],ps=3
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 cd,'../stress'
-fn = stress_from_temp_results('../thermal/steepscarp_MY33_83.8N_235E_S70A225_results.sav')
-restore,fn
+fn1 = stress_from_temp_results('../thermal/steepscarp_MY33_83.8N_235E_S70A225_results.sav',d=1d-3)
+fn2 = stress_from_temp_results('../thermal/steepscarp_MY33_83.8N_235E_S70A225_results.sav',d=1d-4)
+fn3 = stress_from_temp_results('../thermal/steepscarp_MY33_83.8N_235E_S70A225_results.sav',d=1d-5)
 
+;
+; Plot results
+;
+restore,fn1
+.run ../figure_production/surface_and_subsurface_temps_stress.idl
+restore,fn2
+.run ../figure_production/surface_and_subsurface_temps_stress.idl
+restore,fn3
+.run ../figure_production/surface_and_subsurface_temps_stress.idl
 
 
 end

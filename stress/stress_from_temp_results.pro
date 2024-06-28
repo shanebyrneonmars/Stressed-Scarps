@@ -80,7 +80,7 @@ function stress_from_temp_results, fname, d = d
 
   ffname = 'stress_' + string(round(d * 1d6), format = '(I04)') + '_' + (strsplit(fname,'/',/extract))[-1]
 
-  save, ci, dz, itt, ls, ltst, mc, sav_allt, sp, z, lss, sig, dz0, filename = ffname
+  save, ci, dz, itt, ls, ltst, mc, sav_allt, sp, z, lss, sig, dz0, d, filename = ffname
 
   return, ffname
 end
