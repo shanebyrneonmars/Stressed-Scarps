@@ -1,0 +1,13 @@
+name: pydev
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - scipy
+  - pandas
+  - matplotlib
+  - astropy
+  - time
+  - numpy=1.26.4
+  - gdal
+prefix: /Users/shane/miniforge3/envs/pydev
